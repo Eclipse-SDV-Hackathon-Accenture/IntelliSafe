@@ -8,20 +8,24 @@ This script is designed for object detection and distance estimation in a video 
 - **numpy**: Library for the Python programming language, adding support for large, multi-dimensional arrays and matrices, along with a large collection of high-level mathematical functions to operate on these arrays.
 
 ## Code Explanation
-1. The YOLOv5 model is loaded from the local path 'yolov5s.pt' using PyTorch's `torch.hub.load()` function.
-2. A video is loaded using OpenCV's `cv2.VideoCapture()` function.
-3. A VideoWriter object is created to save the processed video.
-4. A polygonal Region of Interest (ROI) is defined using numpy's `np.array()` function.
-5. The actual dimensions of the object and the focal length of the camera are defined.
-6. Each frame of the video is processed in a while loop. If a frame cannot be read, the loop breaks.
-7. The polygonal ROI is drawn on the frame using OpenCV's `cv2.polylines()` function.
-8. The y-coordinates of three horizontal lines inside the ROI are calculated.
-9. Object detection is performed on the frame using the loaded YOLOv5 model.
-10. For each detected object, the bounding box's centroid is calculated. If the centroid is inside the polygon ROI, the distance to the object is calculated using the formula `(object_width * focal_length) / (xmax - xmin)`. The bounding box and the distance are drawn on the frame.
-11. If the bounding box crosses any of the horizontal lines, a collision warning is displayed on the frame.
-12. The processed frame is displayed using OpenCV's `cv2.imshow()` function and written to the output video using the `write()` function of the VideoWriter object.
-13. The loop can be stopped by pressing 'q'.
-14. At the end of the script, the video capture and writer objects are released, and all OpenCV windows are destroyed.
+The script contains a `BrakeAssist` class that handles the processing of the video frames and the detection of objects. The class uses a pre-trained YOLOv5 model to detect objects in each frame of the video. The detected objects are then processed to calculate their distance from the vehicle. Based on the calculated distance and the speed of the vehicle, the system provides appropriate warning messages.
+
+The code also adjusts the sentivity of the system based on speed of the car, making it more sensitive when the speed are high since brakes need to be applied sooner on high speeds.
+
+The `process_frame` method process each frame of the video.
+
+The `get_warning_message` function is used to generate the warning messages based on the speed of the vehicle and the maximum crossed line.
+
+The `handle_crossed_lines` function is used to display the warning messages on the video frame.
+
+## Usage
+
+To use the script, create an instance of the `BrakeAssist` class by providing the path to the pre-trained YOLOv5 model, the path to the input video, and the path to the output video. Then, call the `process_video` method on the created instance.
+
+```python
+processor = BrakeAssist('yolov5s.pt', 'input.mp4', 'intelli_safe_output.mp4')
+processor.process_video()
+```
 
 ## Note
 - The script assumes that the video and the YOLOv5 model are in the same directory as the script.
