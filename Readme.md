@@ -1,73 +1,91 @@
-# Hack the Car 🚗
+# Protobuf interfaces of the test vehicle
 
-Did you ever want to work an actual research vehicle? Well, here you can!
+---
 
-The setup consists of:
+### Turn indicator contol
+|   |  |
+| --- | --- |
+| File     | [Arbitration/IndicatorRequest.proto](/datatypes/Arbitration/IndicatorRequest.proto) |
+| Message | **pb.Arbitration.IndicatorRequest** |
+| Direction | To vehicle |
+| Topic  | TurnIndicatorRequestArbitrated |
 
-- A VW Passat
-- A Test driver that will drive around for you
-- Cameras
-- LiDARs
-- GPS
-- Vehicle Data
-- You, your laptop and your software 😊
+---
 
-_Note that there will be no actual closed-loop control of the vehicle. You will only be able to read data from the vehicle, but not control it._
+### Various in-vehicle buttons 
+|   |  |
+| --- | --- |
+| File     | [SensorNearData/CarSwitches.proto](/datatypes/SensorNearData/CarSwitches.proto) |
+| Message | **pb.SensorNearData.CarSwitches** |
+| Direction | From vehicle |
+| Topic  | CarSwitchesInPb |
 
-# 📚 About
+---
 
-[Eclipse eCAL™](http://ecal.io) is a **publish subscribe** Middleware with the main focus on research and development of **autonomous driving** algorithms.
+### Gas pedal position and gear
+|   |  |
+| --- | --- |
+| File     | [SensorNearData/PowerTrain.proto](/datatypes/SensorNearData/PowerTrain.proto) |
+| Message | **pb.SensorNearData.PowerTrain** |
+| Direction | From vehicle |
+| Topic  | PowerTrainInPb |
 
-- A Publisher **publishes data** to a topic, identified by a name.
-- A Subscriber **subscribes to a topic**, identified by a name. When it received data, it calls a **callback function**.
+---
 
-# 👾 Hack Ideas
+### Brake pedal pressure
+|   |  |
+| --- | --- |
+| File     | [SensorNearData/Brake.proto](/datatypes/SensorNearData/Brake.proto) |
+| Message | **pb.SensorNearData.Brake** |
+| Direction | From vehicle |
+| Topic  | BrakeInPb |
 
-- Recognize predestrians
-- Develop HMIs to fuse point cloud data on an OpenStreeMap
-- Use the LiDAR to scan a 3D Object
-- Welcome the owner à la Face ID
+---
 
-# 💻 Requirements
+### Steering wheel angle, speed per wheel and IMU data
+|   |  |
+| --- | --- |
+| File     | [SensorNearData/VehicleDynamics.proto](/datatypes/SensorNearData/VehicleDynamics.proto) |
+| Message | **pb.SensorNearData.VehicleDynamics** |
+| Direction | From vehicle |
+| Topic  | VehicleDynamicsInPb |
 
-- A **laptop**:
-    - Running Windows or Linux.
-      _MacOS may work too, but eCAL is poorly tested on that OS._
-    - An ethernet interface (or a USB to ethernet adapter)
+---
 
-- **Programming languages**
-    - Recommended: Python or C++
-    - Other options: C, C#, JavaScript, Rust
+### GPS position
+|   |  |
+| --- | --- |
+| File     | [ros/sensor_msgs/NavSatFix.proto](/datatypes/ros/sensor_msgs/NavSatFix.proto) |
+| Message | **ros.sensor_msgs.NavSatFix** |
+| Direction | From vehicle |
+| Topic  | ROSGlobalPosition |
 
-# 👨‍🏫 Hack-Coaches
+---
 
-- Kerstin Keller
-- Florian Reimold
-- Kristof Hannemann
-- Rex Schilasky
-- Florian Geis
+### Camera image
+|   |  |
+| --- | --- |
+| File     | [ros/sensor_msgs/CompressedImage.proto](/datatypes/ros/sensor_msgs/CompressedImage.proto) |
+| Message | **ros.sensor_msgs.CompressedImage** |
+| Direction | From vehicle |
+| Topic  | ROSFrontCenterImage |
 
-# 🛠 Template Setup
+---
 
-1. Download and setup Eclipse eCAL:
-    - 🐧 Ubuntu:
-        ```bash
-        sudo add-apt-repository ppa:ecal/ecal-latest
-        sudo apt-get update
-        sudo apt-get install ecal
-        ```
+### LIDAR point cloud
+|   |  |
+| --- | --- |
+| File     | [ros/sensor_msgs/PointCloud2.proto](/datatypes/ros/sensor_msgs/PointCloud2.proto) |
+| Message | **ros.sensor_msgs.PointCloud2** |
+| Direction | From vehicle |
+| Topic  | ROSVLS128CenterCenterRoof |
 
-    - 🪟 Windows:
-        - Download the latest release from https://eclipse-ecal.github.io/ecal/_download_archive/download_archive.html
+---
 
-2. Connect your Laptop to the vehicle via ethernet cable.
-
-Example measurement:
-https://drive.google.com/drive/folders/1-wHCBS1mx420NWE4ZJfxF6UJuahHMS0J?usp=sharing
-
-# 👀 All necessary links
-
-**Eclipse eCAL**:
-- 🏠 Homepage: http://ecal.io
-- 👨‍💻 GH Repository: https://github.com/eclipse-ecal/ecal
-- 💡 How to compile eCAL: https://eclipse-ecal.github.io/ecal/development/building_ecal_from_source.html
+### Detected traffic participants
+|   |  |
+| --- | --- |
+| File     | [ros/visualization_msgs/MarkerArray.proto](/datatypes/ros/visualization_msgs/MarkerArray.proto) |
+| Message | **ros.visualization_msgs.MarkerArray** |
+| Direction | From vehicle |
+| Topic  | ROSTrafficParticipantList |
