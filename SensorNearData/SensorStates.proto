@@ -1,5 +1,5 @@
 syntax = "proto2";
-package pb;
+package SensorNearData;
 
 enum SensorStates
 {

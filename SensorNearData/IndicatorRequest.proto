@@ -1,8 +1,8 @@
 syntax = "proto2";
 
-package pb.Arbitration;
+package SensorNearData;
 
-import "header.proto";
+import "SensorNearData/header.proto";
 
 message IndicatorRequest
 {
@@ -14,6 +14,6 @@ message IndicatorRequest
     IS_BOTH  =  3;
   }
 
-  optional pb.Header header            = 1; 
+  optional SensorNearData.Header header            = 1; 
   optional Indicator indicator_request = 2;
 }

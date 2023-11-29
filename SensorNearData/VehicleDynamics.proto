@@ -1,22 +1,22 @@
 syntax = "proto2";
 
-package pb.SensorNearData;
+package SensorNearData;
 
-import "header.proto";
+import "SensorNearData/header.proto";
 import "SensorNearData/SensorStates.proto";
 
 message VehicleDynamics
 {
     message Errs
     {
-        optional  SensorStates speed                       =  1 [default = STATE_FAULT];    ///
-        optional  SensorStates speed_displayed             =  2 [default = STATE_FAULT];    ///
-        repeated  SensorStates speed_per_wheel             =  3 [packed = true];            ///
-        optional  SensorStates long_acc                    =  4 [default = STATE_FAULT];    ///
-        optional  SensorStates lat_acc                     =  5 [default = STATE_FAULT];    ///
-        optional  SensorStates yawrate                     =  6 [default = STATE_FAULT];    ///
-        optional  SensorStates steering_wheel_angle        =  7 [default = STATE_FAULT];    ///
-        optional  SensorStates steering_wheel_angle_speed  =  8 [default = STATE_FAULT];    ///
+        optional  SensorNearData.SensorStates speed                       =  1 [default = STATE_FAULT];    ///
+        optional  SensorNearData.SensorStates speed_displayed             =  2 [default = STATE_FAULT];    ///
+        repeated  SensorNearData.SensorStates speed_per_wheel             =  3 [packed = true];            ///
+        optional  SensorNearData.SensorStates long_acc                    =  4 [default = STATE_FAULT];    ///
+        optional  SensorNearData.SensorStates lat_acc                     =  5 [default = STATE_FAULT];    ///
+        optional  SensorNearData.SensorStates yawrate                     =  6 [default = STATE_FAULT];    ///
+        optional  SensorNearData.SensorStates steering_wheel_angle        =  7 [default = STATE_FAULT];    ///
+        optional  SensorNearData.SensorStates steering_wheel_angle_speed  =  8 [default = STATE_FAULT];    ///
     }
 
     message Signals
@@ -43,7 +43,7 @@ message VehicleDynamics
         optional  sint64 steering_wheel_angle_speed  =  8;    /// [us] 
     }
 
-    optional  pb.Header             header                  =  1;                  /// common message header, like timestamp
+    optional  SensorNearData.Header             header                  =  1;                  /// common message header, like timestamp
     optional  Errs                  errs                    =  3;                  ///
     optional  Signals               signals                 =  4;                  ///
     optional  Timestamp             timestamps              =  7;                  ///

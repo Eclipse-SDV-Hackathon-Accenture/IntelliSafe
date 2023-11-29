@@ -1,8 +1,8 @@
 syntax = "proto2";
 
-package pb.SensorNearData;
+package SensorNearData;
 
-import "header.proto";
+import "SensorNearData/header.proto";
 import "SensorNearData/SensorStates.proto";
 
 message CarSwitches
@@ -77,7 +77,7 @@ message CarSwitches
         optional  sint64 cruise_control                 =   6;    /// [us]
     }
 
-    optional  pb.Header             header                  =  1;                 /// common message header, like timestamp 
+    optional  SensorNearData.Header             header                  =  1;                 /// common message header, like timestamp 
     optional  Errs                  errs                    =  3;                 ///
     optional  Signals               signals                 =  4;                 ///
     optional  Timestamp             timestamps              =  6;                 ///

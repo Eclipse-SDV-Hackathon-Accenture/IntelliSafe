@@ -1,8 +1,8 @@
 syntax = "proto2";
 
-package pb.SensorNearData;
+package SensorNearData;
 
-import "header.proto";
+import "SensorNearData/header.proto";
 import "SensorNearData/SensorStates.proto";
 
 message PowerTrain
@@ -38,7 +38,7 @@ message PowerTrain
     }
 
 
-    optional  pb.Header             header                  =  1;                  /// common message header, like timestamp [us]
+    optional  SensorNearData.Header             header                  =  1;                  /// common message header, like timestamp [us]
     optional  Errs                  errs                    =  3;                  ///
     optional  Signals               signals                 =  4;                  ///
 }
