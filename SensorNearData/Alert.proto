@@ -1,0 +1,10 @@
+syntax = "proto2";
+
+package SensorNearData;
+
+message Alert
+{
+  optional bool is_panic_braking = 1 [default = false];
+  optional double latitude = 2 [default = 0.0];
+  optional double longitude = 3 [default = 0.0];
+}
