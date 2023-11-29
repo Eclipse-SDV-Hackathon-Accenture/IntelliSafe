@@ -3,6 +3,50 @@ import torch
 import numpy as np
 
 
+def get_warning_message(speed, max_crossed_line):
+    if speed < 40:
+        if 4 <= max_crossed_line <= 5:
+            return 'FORWARD COLLISION WARNING'
+        elif 6 <= max_crossed_line <= 8:
+            return 'COLLISION WARNING SEVERE'
+        elif 9 <= max_crossed_line <= 11:
+            return 'PAY ATTENTION & TAKE CONTROL'
+        elif max_crossed_line >= 11:
+            return 'EMERGENCY STOPPING ..!!'
+    elif 40 <= speed < 60:
+        if 5 <= max_crossed_line <= 6:
+            return 'FORWARD COLLISION WARNING'
+        elif 7 <= max_crossed_line <= 9:
+            return 'COLLISION WARNING SEVERE'
+        elif 10 <= max_crossed_line <= 12:
+            return 'PAY ATTENTION & TAKE CONTROL'
+        elif max_crossed_line >= 12:
+            return 'EMERGENCY STOPPING ..!!'
+    else:
+        if 6 <= max_crossed_line <= 7:
+            return 'FORWARD COLLISION WARNING'
+        elif 8 <= max_crossed_line <= 10:
+            return 'COLLISION WARNING SEVERE'
+        elif 11 <= max_crossed_line <= 13:
+            return 'PAY ATTENTION & TAKE CONTROL'
+        elif max_crossed_line >= 13:
+            return 'EMERGENCY STOPPING ..!!'
+
+
+def handle_crossed_lines(frame, crossed_lines, speed):
+    if crossed_lines:
+        cv2.putText(frame, 'BRAKE', (1000 - 25, 100 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+        crossed_lines_str = ', '.join(str(line_num) for line_num in crossed_lines)
+        cv2.putText(frame, str(max(crossed_lines)), (1000, 100 + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255),
+                    2)
+
+        warning_message = get_warning_message(speed, max(crossed_lines))
+        if warning_message:
+            cv2.putText(frame, warning_message, (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2,
+                        cv2.LINE_AA)
+    return frame
+
+
 class BrakeAssist:
     def __init__(self, model_path, video_path, output_path):
         self.device = "cpu"
@@ -15,14 +59,27 @@ class BrakeAssist:
         self.roi_points = np.array([[400, 720], [400, 400], [870, 400], [870, 720]], np.int32)
         self.object_width = 50
         self.focal_length = 1000
-        self.dist_ = 12
+        self.dist_ = 35
+        self.line_y1 = 600
 
-    def process_frame(self, frame, line_ys, line_colors, crossed_lines):
+    def process_frame(self, frame, crossed_lines, speed, prev_speed):
         results = self.model(frame, size=320)
         detections = results.pred[0]
 
         height, width, _ = frame.shape
         cv2.line(frame, (width // 2, 0), (width // 2, height), (160, 160, 160), 2)
+
+        if abs(speed - prev_speed) >= 5:
+            if 410 <= self.line_y1 <= 600:
+                if speed > prev_speed:
+                    self.line_y1 -= 10
+                else:
+                    self.line_y1 += 10
+                prev_speed = speed
+
+        line_gap = 10
+        line_ys = [self.line_y1 + i * line_gap for i in range(self.dist_)]
+        line_colors = [(255, 0, 0) for _ in range(self.dist_)]
 
         for detection in detections:
             xmin = detection[0]
@@ -58,47 +115,31 @@ class BrakeAssist:
         for line_y, color in zip(line_ys, line_colors):
             cv2.line(frame, (self.roi_points[0][0], line_y), (self.roi_points[2][0], line_y), color, 2)
 
-        return frame, crossed_lines
+        return frame, crossed_lines, prev_speed
 
     def process_video(self):
+        speed = 0
+        prev_speed = speed
         while True:
             success, frame = self.video.read()
-            frame = cv2.resize(frame, (1280, 720))
             if not success:
                 break
+            frame = cv2.resize(frame, (1280, 720))
 
             cv2.polylines(frame, [self.roi_points], True, (0, 200, 0), 2)
-            line_y1 = 600
-            line_gap = 10
-            line_ys = [line_y1 + i * line_gap for i in range(self.dist_)]
-            line_colors = [(255, 0, 0) for _ in range(self.dist_)]
+            
             crossed_lines = []
 
-            frame, crossed_lines = self.process_frame(frame, line_ys, line_colors, crossed_lines)
-
-            if crossed_lines:
-                cv2.putText(frame, 'BRAKE', (1000 - 25, 100 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
-                crossed_lines_str = ', '.join(str(line_num) for line_num in crossed_lines)
-                cv2.putText(frame, str(max(crossed_lines)), (1000, 100 + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
-
-                if 4 <= max(crossed_lines) <= 5:
-                    cv2.putText(frame, 'FORWARD COLLISION WARNING', (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2,
-                                cv2.LINE_AA)
-                elif 6 <= max(crossed_lines) <= 8:
-                    cv2.putText(frame, 'COLLISION WARNING SEVERE', (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2,
-                                cv2.LINE_AA)
-                elif 9 <= max(crossed_lines) <= 11:
-                    cv2.putText(frame, 'PAY ATTENTION & TAKE CONTROL', (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2,
-                                cv2.LINE_AA)
-                elif max(crossed_lines) >= 11:
-                    cv2.putText(frame, 'EMERGENCY STOPPING ..!!', (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2,
-                                cv2.LINE_AA)
+            frame, crossed_lines, prev_speed = self.process_frame(frame, crossed_lines, speed, prev_speed)
+            frame = handle_crossed_lines(frame, crossed_lines, speed)
 
             cv2.imshow("Video", frame)
             self.output.write(frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
+            speed += 1
 
         self.video.release()
         self.output.release()
@@ -108,3 +149,4 @@ class BrakeAssist:
 # Usage
 processor = BrakeAssist('yolov5s.pt', '20231128-1516-56.7048286.mp4', 'intelli_safe_output.mp4')
 processor.process_video()
+
