@@ -1,3 +1,4 @@
+from typing import Any
 import cv2
 import torch
 import numpy as np
@@ -8,7 +9,6 @@ import ros.sensor_msgs.CompressedImage_pb2 as CompressedImage_pb2
 from PIL import Image
 import io
 import matplotlib.pyplot as plt
-from ros.sensor_msgs import PointCloud2_pb2
 import cv2
 import torch
 import numpy as np
@@ -16,29 +16,14 @@ import matplotlib.image as mpimg
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import SensorNearData.VehicleDynamics_pb2 as VehicleDynamics_pb2
+import SensorNearData.Brake_pb2 as Brake_pb2
+import ros.sensor_msgs.NavSatFix_pb2 as NavSatFix_pb2
+import SensorNearData.Alert_pb2 as Alert_pb2
+from ecal.core.publisher import ProtoPublisher
 import cv2
 import torch
 import numpy as np
-import streamlit as st
-import pandas as pd
-import numpy as np
-
-def streamlit():
-    
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        print("hi")
-
-    with col2:
-        l = [[48.1175451,11.6026423,5], [48.1175451,11.6056423,5 ],[48.1175451,11.6026423,100]]
-        df = pd.DataFrame(l, columns=['lat', 'lon',"sizes"])
-        df['colors']= np.random.rand(3).tolist()
-        
-        st.map(df, latitude='lat', longitude='lon',size="sizes")
-        # st.markdown(page_bg_img, unsafe_allow_html=True)
-        
-    with col3:
-        print("hi")
+import subprocess
 
 speed_global = 0
 
@@ -93,6 +78,19 @@ def handle_crossed_lines(frame, crossed_lines, speed):
 #     clip_speed_up = clip_resized.fx(vfx.speedx, 2)
 
 #     clip_speed_up.write_gif("intelli_safe_output.gif")
+
+# class AlertAttributes:
+#     def __init__(self):
+#         self.is_pannic =  False
+#         self.latitude = 0.0
+#         self.longitude = 0.0
+#         self.message = "All is Well!"
+
+#     def send_alert(self):
+#         if self.is_pannic:
+#             self.message = "Caution! There is a sudden brake around you. Slow down!"
+#         return self.is_pannic, self.latitude, self.longitude, self.message
+    
 
 
 class BrakeAssist:
@@ -180,52 +178,54 @@ class BrakeAssist:
         frame, crossed_lines, prev_speed = self.process_frame(frame, crossed_lines, speed, prev_speed)
         frame = handle_crossed_lines(frame, crossed_lines, speed)
         self.prev_speed = prev_speed
-        print("2", speed, prev_speed)
+        # print("2", speed, prev_speed)
         cv2.imshow("Video", frame)
         self.output.write(frame)
 
-def callback1(topic_name, compressed_image, time):
+def callback_image(topic_name, compressed_image, time):
     img = mpimg.imread(io.BytesIO(compressed_image.data), format=compressed_image.format)
     processor.process_video(img)
     cv2.waitKey(1)
 
-
-
 def callback_speed(topic_name, vehicle_dynamics, time):
     processor.speed = vehicle_dynamics.signals.speed
-    # speed_list = []
-    # speed_list.append(vehicle_dynamics.signals.speed)
-    # print("speed_global callbackspeed",speed_global)
-    # print("speed_global callbackspeed",vehicle_dynamics.signals.speed)
-    # print("len of the list:", len(speed_list))
 
-def callback2(topic_name, point_cloud, time):
-    # print("Received PointCloud2:")
-    # print("Header:", point_cloud.header)
-    # print("Height:", point_cloud.height)
-    # print("Width:", point_cloud.width)
-    # print("Fields:", point_cloud.fields)
-    # print("Is Big Endian:", point_cloud.is_bigendian)
-    # print("Point Step:", point_cloud.point_step)
-    # print("Row Step:", point_cloud.row_step)
-    # print("Data Length:", len(point_cloud.data))
-    print("Is Dense:", point_cloud.is_dense)
+def callback_gps(topic_name, gps, time):
+    # if alert.is_panic_braking:
+    alert.latitude = gps.latitude
+    alert.longitude = gps.longitude
+    # else:
+    #     alert.latitude = 0.0
+    #     alert.longitude = 0.0
 
+def callback_brake(topic_name, brake, time):
+    alert.is_panic_braking = brake.signals.is_panic_braking
 
-
-ecal_core.initialize([], "CompressedImageSubscriber")
-sub = ProtoSubscriber("ROSFrontCenterImage", CompressedImage_pb2.CompressedImage)
+ecal_core.initialize([], "IntelliSafe")
+sub_image = ProtoSubscriber("ROSFrontCenterImage", CompressedImage_pb2.CompressedImage)
 processor = BrakeAssist('yolov5s.pt', '20231128-1516-56.7048286.mp4', 'intelli_safe_output.mp4')
-sub2 = ProtoSubscriber("ROSVLS128CenterCenterRoof", PointCloud2_pb2.PointCloud2)
-sub3 = ProtoSubscriber("VehicleDynamicsInPb", VehicleDynamics_pb2.VehicleDynamics)
-sub3.set_callback(callback_speed)
-sub2.set_callback(callback2)
-sub.set_callback(callback1)
-streamlit()
+sub_gps = ProtoSubscriber("ROSGlobalPosition", NavSatFix_pb2.NavSatFix)
+sub_speed = ProtoSubscriber("VehicleDynamicsInPb", VehicleDynamics_pb2.VehicleDynamics)
+sub_brake = ProtoSubscriber("BrakeInPb", Brake_pb2.Brake)
+
+
+sub_speed.set_callback(callback_speed)
+sub_image.set_callback(callback_image)
+sub_brake.set_callback(callback_brake)
+sub_gps.set_callback(callback_gps)
+
+alert = Alert_pb2.Alert()
+
+pub = ProtoPublisher("AlertNotification", Alert_pb2.Alert)
+
+# subprocess.run(["streamlit", "run", r".\app.py"])
+
 processor.video.release()
 processor.output.release()
 cv2.destroyAllWindows()
 while ecal_core.ok():
+    print(alert)
+    pub.send(alert)
     time.sleep(10)
 ecal_core.finalize()
 
