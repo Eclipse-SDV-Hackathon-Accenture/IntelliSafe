@@ -18,6 +18,7 @@ message Brake
     {
         optional  float             driver_pressure              =  2 [default = 0.0];    /// [bar]
         optional  bool              is_brake_applied             =  3 [default = false];  ///
+        optional  bool              is_panic_braking          =  4 [default = false];  ///
     }
 
     optional  SensorNearData.Header             header                  =  1;                  /// common message header, timestamp
