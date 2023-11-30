@@ -2,7 +2,6 @@ import cv2
 import torch
 import numpy as np
 
-
 # Function to get a warning message based on speed and crossed line
 def get_warning_message(speed, max_crossed_line):
     # Implementation of the logic to determine the warning message based on speed and crossed line
