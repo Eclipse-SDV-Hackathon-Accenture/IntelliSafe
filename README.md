@@ -34,3 +34,14 @@ In our proposed near real time solution we collect image and speed sensor data f
 </p>
 
 
+## Alert Notification Application
+
+Based on the sequential inputs by multiple publishers, the subscriber with the help of a notifier application generates insightful panic break based alerts. And, we are also directed towards a screen that quantifies the vicinity of the collision when we click on "More Info".
+
+
+<p align="center">
+  <img src="assets/figures/IntelliSafe-alert-app-ui.svg" width="500" />
+</p>
+<p align="center">
+   <b>IntelliSafe Alert Notification Application</b>
+</p>
