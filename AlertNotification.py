@@ -4,7 +4,9 @@ from ecal.core.subscriber import ProtoSubscriber
 import SensorNearData.Alert_pb2 as Alert_pb2
 import geopy.distance
 import pandas as pd
+import subprocess
 
+#Initializing a random default value
 curr_latitude, curr_longitude = 48.12, 11.60
 geo_locations = []
 
@@ -18,7 +20,9 @@ def callback(topic_name, alerts, time):
         geo_locations.append([alerts.alert[0].car_id, alerts.alert[0].latitude, alerts.alert[0].longitude , geopy.distance.geodesic((alerts.alert[0].latitude, alerts.alert[0].longitude ), (curr_latitude, curr_longitude))])
         is_reported.append(alerts.alert[0].car_id)
     df = pd.DataFrame(geo_locations, columns=['id', 'lat', 'lon', "sizes"])
-    df.to_csv('out.csv')
+    df.to_csv('panic_brake_alert.csv')
+    subprocess.run(["streamlit", "run", r".\app_ui\alert_notification_app.py"])
+    
     
 ecal_core.initialize([], "InteliSafe")
 sub = ProtoSubscriber("AlertNotification", Alert_pb2.Alerts)

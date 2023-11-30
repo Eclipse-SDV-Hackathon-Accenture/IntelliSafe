@@ -1,3 +1,7 @@
+"""
+This script when executed runs application. 
+This application script is triggered when there is a panic braking in the close vicintiy.
+"""
 import streamlit as st
 import pandas as pd
 import base64
@@ -26,8 +30,8 @@ page_bg_img = f"""
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    print() # additional whitespace for centralizing the content
-
+    # additional whitespace for centralizing the content
+    print() 
 with col2:
     st.markdown(page_bg_img, unsafe_allow_html=True)
     button_placeholder = st.empty()
@@ -57,14 +61,15 @@ with col2:
      open_button = st.button(label='Proximity Brake Alert')
     
     if open_button:
-        df= pd.read_csv("../out.csv")
-        # creating Proximity range
+        df= pd.read_csv("../panic_brake_alert.csv")
+        # creating Proximity range to be updated in the map
         df['sizes'] = [10, 10, 80]
+        # Color code for the markers in the map
         df['color'] = [(255, 0, 0), (0, 204, 102), (255, 0, 0, 0.5)]
-        df["lat"] = df["lat"].astype(float)
-        df["lon"] = df["lon"].astype(float)
-        st.map(df, latitude='lat', longitude='lon', color = 'color', size="sizes",zoom = 15) # outputs the map
+        # outputs the map
+        st.map(df, latitude='lat', longitude='lon', color = 'color', size="sizes",zoom = 15) 
 
 with col3:
-    print() # additional whitespace for centralizing the content
+    # additional whitespace for centralizing the content
+    print() 
 
