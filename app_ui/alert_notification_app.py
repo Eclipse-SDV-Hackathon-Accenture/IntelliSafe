@@ -57,11 +57,14 @@ with col2:
      open_button = st.button(label='Proximity Brake Alert')
     
     if open_button:
-        # fixed list of latitudes and logitudes received from subscriber having multiple publishers
-        l = [[48.1175451,11.6026423,10], [48.1175451,11.6036423, 10],[48.1175451,11.6026423,80]]
-        df = pd.DataFrame(l, columns=['lat', 'lon',"sizes"])
+        df= pd.read_csv("../out.csv")
+        # creating Proximity range
+        df['sizes'] = [10, 10, 80]
         df['color'] = [(255, 0, 0), (0, 204, 102), (255, 0, 0, 0.5)]
+        df["lat"] = df["lat"].astype(float)
+        df["lon"] = df["lon"].astype(float)
         st.map(df, latitude='lat', longitude='lon', color = 'color', size="sizes",zoom = 15) # outputs the map
 
 with col3:
     print() # additional whitespace for centralizing the content
+
