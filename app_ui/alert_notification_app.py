@@ -7,13 +7,14 @@ import pandas as pd
 import base64
 import streamlit as st
 from streamlit_extras.stylable_container import stylable_container
+import os
 
 def get_img_as_base64(file):
     with open(file, "rb") as f:
         data = f.read()
     return base64.b64encode(data).decode()
-
-img = get_img_as_base64("../app_ui/assets/background-wireframe.jpg")
+print(os.getcwd())
+img = get_img_as_base64("app_ui/assets/background-wireframe.jpg")
 
 page_bg_img = f"""
 <style>
@@ -61,7 +62,7 @@ with col2:
      open_button = st.button(label='Proximity Brake Alert')
     
     if open_button:
-        df= pd.read_csv("../panic_brake_alert.csv")
+        df= pd.read_csv("panic_brake_alert.csv")
         # creating Proximity range to be updated in the map
         df['sizes'] = [10, 10, 80]
         # Color code for the markers in the map

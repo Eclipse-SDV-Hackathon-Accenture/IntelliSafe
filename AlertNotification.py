@@ -20,7 +20,7 @@ def callback(topic_name, alert, time):
         geo_locations.append([alert.car_id, alert.latitude, alert.longitude , geopy.distance.geodesic((alert.latitude, alert.longitude ), (curr_latitude, curr_longitude))])
         is_reported.append(alert.car_id)
     df = pd.DataFrame(geo_locations, columns=['id', 'lat', 'lon', "sizes"])
-    df.to_csv('panic_brake_alert.csv')
+    # df.to_csv('panic_brake_alert.csv')
     subprocess.run(["streamlit", "run", r".\app_ui\alert_notification_app.py"])
     
     
