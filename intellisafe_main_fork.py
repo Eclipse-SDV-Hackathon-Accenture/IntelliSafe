@@ -27,7 +27,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 class Attributes():
     def __init__(self):
-        self.car_id = 'Car1'
+        self.car_id = 'Car2'
         self.latitude = 0.0
         self.longitude = 0.0
         self.is_panic_braking = False
