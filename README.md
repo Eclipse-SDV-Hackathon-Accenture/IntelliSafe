@@ -65,14 +65,15 @@ Based on the sequential inputs by multiple publishers, the subscriber with the h
 
 We have three different modules that utilize eCAL's capabilities for near real time break assistance, decentralized alert notifier system, and a subscriber alert notification visualizer app.
 
-1. `Near Real Time Break Assistance`: To execute this file we have to make sure that all the dependencies listed in the `requirements.txt` for the object detection module and eCAL are already installed. Then we have to execute the `intellisafe_main.py` with eCAL data being streamed parallely. It incorporates the object detection into a singular module and it also provides near real time stream of the eCAL data. We also get annotated object outputs with distance and speed estimates to provide break assistance information which dynamically depends on the car speed as well.
+1. `Near Real Time Break Assistance`: To execute this file we have to make sure that all the dependencies listed in the `requirements.txt` for the object detection module and eCAL are already installed. Then we have to execute the `intellisafe_main.py` with eCAL data being streamed parallely. It incorporates the object detection into a singular module and it also provides a near real time stream of the eCAL data. We also get annotated object outputs with distance and speed estimates to provide break assistance information which dynamically depends on the car speed as well.
 
 
-**Note:** The AI detection pipeline as a seperate execution module is exists in `object_detection` module. It inputs video data and the corresponding execution details for a separate analysis are present its [README.md](object_detection/README.md) file.
+**Note:** The AI detection pipeline as a separate execution module exists in `object_detection` module. It inputs video data and the corresponding execution details for a separate analysis are present in its [README.md](object_detection/README.md) file.
 
-2. `Decentralized Alert Notifier System`: The `intellisafe_main.py` needs to executed parallely beforehand and then we execute the `intellisafe_main_fork.py` to demonstrate Pub/Sub communication between two smart cars. And, the we have the `AlertNotification.py` subscriber which represents a regular car without any smart components that receives the panic break alerts from these two nearby smart cars.
+2. `Decentralized Alert Notifier System`: The `intellisafe_main.py` needs to be executed parallely beforehand and then we execute the `intellisafe_main_fork.py` to demonstrate Pub/Sub communication between two smart cars. And, then we have the `AlertNotification.py` subscriber which represents a regular car without any smart components that receives the panic break alerts from these two nearby smart cars.
 
 
-3. `Subscriber Alert Notification Visualizer App`: In order to see the application for alert notification we need to execute the `AlertNotification.py`. When the panic braking is obsereved with a close proximity of a vehicle the Alert Notification UI is triggered.
+3. `Subscriber Alert Notification Visualizer App`: In order to see the application for alert notification we need to execute the `AlertNotification.py`. When the panic braking is observed with a close proximity of a vehicle the Alert Notification UI is triggered.
+
 
 
