@@ -33,10 +33,25 @@ In our proposed near real time solution we collect image and speed sensor data f
     <b> Speed based increase on the driver assist detector</b>
 </p>
 
+## Proxity Based Decentralized Communication
+
+With this idea, we intend to inform the nearby vehicles _(smart or not)_ that an incident has happened in the nearby vicinity and highlight the regions as well so that the user can select a new route.
+We can use multiple approaches/protocols with this solution, but with eCAL's Pub/Sub based architecture we wanted to carry out a POC study for assessing the feasibility of this framework to handle parallelized topics from multiple publishers.
+With our implementation of parallelized publishers for a single subscriber we observed that the subscriber alternatively can only receive topic information from a single publisher at a given instance.
+It was done by using the _repeated_ type for the _Alert_ protobuf which stores data from multiple publishers but only accesses them sequentially during processing.
+However, we argue that in highway settings or highly dense settings this strategy with limited nearby vehicles can have great efficiency to avoid owing to the relay message-like propagation behavior effect, refer diagram below.
+
+<p align="center">
+  <img src="assets/figures/IntelliSafe-multiple-publisher-and-subscriber-architecture.svg" width="500" />
+</p>
+<p align="center">
+   <b>IntelliSafe Multiple Publisher and Subscribers</b>
+</p>
+
 
 ## Alert Notification Application
 
-Based on the sequential inputs by multiple publishers, the subscriber with the help of a notifier application generates insightful panic break based alerts. And, we are also directed towards a screen that quantifies the vicinity of the collision when we click on "More Info".
+Based on the sequential inputs by multiple publishers, the subscriber with the help of a notifier application generates insightful panic break based alerts. And, as highlighted in the below diagram, we are also directed towards a screen that quantifies the vicinity of the collision when we click on "More Info".
 
 
 <p align="center">
