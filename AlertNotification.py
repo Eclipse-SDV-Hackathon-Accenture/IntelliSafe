@@ -12,20 +12,20 @@ geo_locations = []
 
 is_reported = []
 
-def callback(topic_name, alerts, time):
-    print(type(alerts))
-    print(alerts.alert[0])
+def callback(topic_name, alert, time):
+    print(type(alert))
+    print(alert)
     print('Receciving Subscribed Messages')
-    if alerts.alert[0].is_panic_braking and alerts.alert[0].car_id not in is_reported :
-        geo_locations.append([alerts.alert[0].car_id, alerts.alert[0].latitude, alerts.alert[0].longitude , geopy.distance.geodesic((alerts.alert[0].latitude, alerts.alert[0].longitude ), (curr_latitude, curr_longitude))])
-        is_reported.append(alerts.alert[0].car_id)
+    if alert.is_panic_braking and alert.car_id not in is_reported :
+        geo_locations.append([alert.car_id, alert.latitude, alert.longitude , geopy.distance.geodesic((alert.latitude, alert.longitude ), (curr_latitude, curr_longitude))])
+        is_reported.append(alert.car_id)
     df = pd.DataFrame(geo_locations, columns=['id', 'lat', 'lon', "sizes"])
     df.to_csv('panic_brake_alert.csv')
     subprocess.run(["streamlit", "run", r".\app_ui\alert_notification_app.py"])
     
     
 ecal_core.initialize([], "InteliSafe")
-sub = ProtoSubscriber("AlertNotification", Alert_pb2.Alerts)
+sub = ProtoSubscriber("AlertNotification", Alert_pb2.Alert)
 sub.set_callback(callback)
 while ecal_core.ok():
     time.sleep(10)
