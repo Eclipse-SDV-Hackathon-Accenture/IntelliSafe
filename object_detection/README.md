@@ -5,7 +5,7 @@ This script is designed for object detection and distance estimation in a video 
 ## Libraries Used
 - **cv2**: OpenCV library for real-time computer vision.
 - **torch**: PyTorch library for deep learning.
-- **numpy**: 
+- **numpy** 
 
 ## Code Explanation
 The script contains a `BrakeAssist` class that handles the processing of the video frames and the detection of objects. The class uses a pre-trained YOLOv5 model to detect objects in each frame of the video. The detected objects are then processed to calculate their distance from the vehicle. Based on the calculated distance and the speed of the vehicle, the system provides appropriate warning messages.
